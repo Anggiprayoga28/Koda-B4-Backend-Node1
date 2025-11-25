@@ -2,10 +2,46 @@ const ProductModel = require('../models/product.model');
 
 const ProductController = {
   getAll: (req, res) => {
-    const products = ProductModel.getAll();
+    const { search, minPrice, maxPrice, sortBy, order } = req.query;
+    
+    let products = ProductModel.getAll();
+    
+    if (search) {
+      products = products.filter(p => 
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.description.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    
+    if (minPrice) {
+      products = products.filter(p => p.price >= parseFloat(minPrice));
+    }
+    
+    if (maxPrice) {
+      products = products.filter(p => p.price <= parseFloat(maxPrice));
+    }
+    
+    if (sortBy) {
+      products.sort((a, b) => {
+        const orderMultiplier = order === 'desc' ? -1 : 1;
+        
+        if (sortBy === 'name') {
+          return orderMultiplier * a.name.localeCompare(b.name);
+        } else if (sortBy === 'price') {
+          return orderMultiplier * (a.price - b.price);
+        } else if (sortBy === 'stock') {
+          return orderMultiplier * (a.stock - b.stock);
+        } else if (sortBy === 'createdAt') {
+          return orderMultiplier * (new Date(a.createdAt) - new Date(b.createdAt));
+        }
+        return 0;
+      });
+    }
+    
     res.json({
       success: true,
       message: 'Daftar produk berhasil diambil',
+      total: products.length,
       data: products
     });
   },
