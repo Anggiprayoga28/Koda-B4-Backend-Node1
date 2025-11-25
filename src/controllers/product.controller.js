@@ -77,7 +77,8 @@ const ProductController = {
       name,
       description: description || '',
       price: parseFloat(price),
-      stock: stock || 0
+      stock: stock || 0,
+      image: req.file ? `/uploads/${req.file.filename}` : null
     });
     
     res.status(201).json({
@@ -96,6 +97,10 @@ const ProductController = {
       price: price ? parseFloat(price) : undefined,
       stock
     });
+
+    if (req.file) {
+      updateData.image = `/uploads/${req.file.filename}`;
+    }
     
     if (!updatedProduct) {
       return res.status(404).json({ 
