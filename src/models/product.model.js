@@ -5,14 +5,14 @@ let products = [
     description: "Laptop gaming dengan spesifikasi tinggi",
     price: 15000000,
     stock: 10,
-    Image: null,
-    createdAt: new Date("2025-11-1")
+    image: null,
+    createdAt: new Date("2025-11-01")
   },
   {
     id: 2,
-    name: "Mackbook Air",
+    name: "Macbook Air",
     description: "Laptop luar biasa, tipis dan cepat untuk bekerja, bermain, dan berkarya di mana saja.",
-    price: 2400000,
+    price: 24000000,
     stock: 25,
     image: null,
     createdAt: new Date("2025-11-02")
@@ -39,7 +39,7 @@ let products = [
     id: 5,
     name: "Thinkpad",
     description: "lini laptop dari Lenovo yang dirancang untuk profesional dengan fokus pada kinerja tinggi, daya tahan ekstrem, dan fitur keamanan",
-    price: 2500000,
+    price: 25000000,
     stock: 20,
     image: null,
     createdAt: new Date("2025-11-05")
