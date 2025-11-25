@@ -11,7 +11,7 @@ let products = [
     id: 2,
     name: "Mackbook Air",
     description: "Laptop luar biasa, tipis dan cepat untuk bekerja, bermain, dan berkarya di mana saja.",
-    price: 750000,
+    price: 2400000,
     stock: 25,
     createdAt: new Date("2025-11-02")
   },
@@ -19,7 +19,7 @@ let products = [
     id: 3,
     name: "Acer Predator",
     description: "Merek lini perangkat keras komputer dari Acer yang dirancang khusus untuk para gamer dan kreator konten",
-    price: 1200000,
+    price: 12000000,
     stock: 15,
     createdAt: new Date("2025-11-03")
   },
@@ -27,7 +27,7 @@ let products = [
     id: 4,
     name: "Lenovo Legion",
     description: "Seri laptop gaming yang dirancang untuk performa tinggi, menawarkan kombinasi prosesor kuat (AMD Ryzen atau Intel Core), grafis diskrit (NVIDIA GeForce RTX), dan sistem pendingin canggih seperti Legion Coldfront untuk menjaga suhu saat beban berat",
-    price: 2500000,
+    price: 18000000,
     stock: 8,
     createdAt: new Date("2025-11-04")
   },
@@ -35,7 +35,7 @@ let products = [
     id: 5,
     name: "Thinkpad",
     description: "lini laptop dari Lenovo yang dirancang untuk profesional dengan fokus pada kinerja tinggi, daya tahan ekstrem, dan fitur keamanan",
-    price: 850000,
+    price: 2500000,
     stock: 20,
     createdAt: new Date("2025-11-05")
   }
