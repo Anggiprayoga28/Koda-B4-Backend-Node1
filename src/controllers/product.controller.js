@@ -38,6 +38,11 @@ const ProductController = {
       });
     }
     
+    products = products.map(p => ({
+      ...p,
+      imageUrl: p.image ? `${req.protocol}://${req.get('host')}${p.image}` : null
+    }));
+    
     res.json({
       success: true,
       message: 'Daftar produk berhasil diambil',
@@ -56,10 +61,15 @@ const ProductController = {
       });
     }
     
+    const productWithUrl = {
+      ...product,
+      imageUrl: product.image ? `${req.protocol}://${req.get('host')}${product.image}` : null
+    };
+    
     res.json({
       success: true,
       message: 'Produk berhasil diambil',
-      data: product
+      data: productWithUrl
     });
   },
 
@@ -81,26 +91,30 @@ const ProductController = {
       image: req.file ? `/uploads/${req.file.filename}` : null
     });
     
+    const productWithUrl = {
+      ...newProduct,
+      imageUrl: newProduct.image ? `${req.protocol}://${req.get('host')}${newProduct.image}` : null
+    };
+    
     res.status(201).json({
       success: true,
       message: 'Produk berhasil dibuat',
-      data: newProduct
+      data: productWithUrl
     });
   },
 
   update: (req, res) => {
     const { name, description, price, stock } = req.body;
     
-    const updatedProduct = ProductModel.update(req.params.id, {
+    const updateData = {
       name,
       description,
       price: price ? parseFloat(price) : undefined,
-      stock
-    });
-
-    if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
-    }
+      stock,
+      image: req.file ? `/uploads/${req.file.filename}` : undefined
+    };
+    
+    const updatedProduct = ProductModel.update(req.params.id, updateData);
     
     if (!updatedProduct) {
       return res.status(404).json({ 
@@ -109,10 +123,15 @@ const ProductController = {
       });
     }
     
+    const productWithUrl = {
+      ...updatedProduct,
+      imageUrl: updatedProduct.image ? `${req.protocol}://${req.get('host')}${updatedProduct.image}` : null
+    };
+    
     res.json({
       success: true,
       message: 'Produk berhasil diupdate',
-      data: updatedProduct
+      data: productWithUrl
     });
   },
 
