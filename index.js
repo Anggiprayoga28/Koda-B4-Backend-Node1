@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const expressJSDocSwagger = require('express-jsdoc-swagger');
 const authRoutes = require('./src/routers/auth.routes');
 const productRoutes = require('./src/routers/product.routes');
@@ -28,6 +29,8 @@ expressJSDocSwagger(app)(swaggerOptions);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 /**
  * @summary Home endpoint
