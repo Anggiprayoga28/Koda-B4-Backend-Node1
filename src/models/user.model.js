@@ -1,45 +1,53 @@
-let users = [
-  {
-    id: 1,
-    username: "admin",
-    email: "admin@gmail.com",
-    password: "admin123",
-    createdAt: new Date("2025-11-25")
-  },
-  {
-    id: 2,
-    username: "anggi",
-    email: "anggi@gmail.com",
-    password: "anggi123",
-    createdAt: new Date("2025-11-25")
-  },
-  {
-    id: 3,
-    username: "prayoga",
-    email: "prayoga@gmail.com",
-    password: "prayoga123",
-    createdAt: new Date("2025-11-25")
-  }
-];
-let userIdCounter = 4;
+const prisma = require('../lib/prisma');
+const bcrypt = require('bcrypt');
 
 const UserModel = {
-  create: (userData) => {
-    const newUser = {
-      id: userIdCounter++,
-      ...userData,
-      createdAt: new Date()
-    };
-    users.push(newUser);
+  create: async (userData) => {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    
+    const newUser = await prisma.user.create({
+      data: {
+        username: userData.username,
+        email: userData.email,
+        password: hashedPassword
+      }
+    });
+    
     return newUser;
   },
 
-  findByEmail: (email) => {
-    return users.find(u => u.email === email);
+  findByEmail: async (email) => {
+    return await prisma.user.findUnique({
+      where: { email }
+    });
   },
 
-  getAll: () => {
-    return users;
+  findByUsername: async (username) => {
+    return await prisma.user.findUnique({
+      where: { username }
+    });
+  },
+
+  findById: async (id) => {
+    return await prisma.user.findUnique({
+      where: { id: parseInt(id) }
+    });
+  },
+
+  getAll: async () => {
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+  },
+
+  verifyPassword: async (plainPassword, hashedPassword) => {
+    return await bcrypt.compare(plainPassword, hashedPassword);
   }
 };
 
