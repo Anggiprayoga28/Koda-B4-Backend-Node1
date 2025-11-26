@@ -1,8 +1,16 @@
-const express = require('express');
-const ProductController = require('../controllers/product.controller');
-const upload = require('../lib/upload'); 
+import { Router } from 'express';
+import ProductController from '../controllers/product.controller.js';
+import upload from '../lib/upload.js';
+import { 
+  createProductValidation, 
+  updateProductValidation, 
+  getProductValidation, 
+  deleteProductValidation, 
+  queryProductValidation, 
+  validate 
+} from '../validators/product.validators.js';
 
-const router = express.Router();
+const router = Router();
 
 /**
  * GET /products
@@ -15,7 +23,7 @@ const router = express.Router();
  * @param {string} order.query.enum:asc,desc - Sort order
  * @return {object} 200 - Success response with products list
  */
-router.get('/', ProductController.getAll);
+router.get('/', queryProductValidation, validate, ProductController.getAll);
 
 /**
  * GET /products/{id}
@@ -25,7 +33,7 @@ router.get('/', ProductController.getAll);
  * @return {object} 200 - Success response with product data
  * @return {object} 404 - Product not found
  */
-router.get('/:id', ProductController.getById);
+router.get('/:id', getProductValidation, validate, ProductController.getById);
 
 /**
  * POST /products
@@ -36,7 +44,7 @@ router.get('/:id', ProductController.getById);
  * @return {object} 201 - Product created successfully
  * @return {object} 400 - Validation error
  */
-router.post('/', upload.single('image'), ProductController.create);
+router.post('/', upload.single('image'), createProductValidation, validate, ProductController.create);
 
 /**
  * Upload
@@ -58,7 +66,7 @@ router.post('/', upload.single('image'), ProductController.create);
  * @return {object} 200 - Product updated successfully
  * @return {object} 404 - Product not found
  */
-router.patch('/:id', upload.single('image'), ProductController.update);
+router.patch('/:id', upload.single('image'), updateProductValidation, validate, ProductController.update);
 
 /**
  * DELETE /products/{id}
@@ -68,6 +76,6 @@ router.patch('/:id', upload.single('image'), ProductController.update);
  * @return {object} 200 - Product deleted successfully
  * @return {object} 404 - Product not found
  */
-router.delete('/:id', ProductController.delete);
+router.delete('/:id', deleteProductValidation, validate, ProductController.delete);
 
-module.exports = router;
+export default router;
