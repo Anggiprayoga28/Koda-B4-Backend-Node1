@@ -1,8 +1,13 @@
-const express = require('express');
-const path = require('path');
-const expressJSDocSwagger = require('express-jsdoc-swagger');
-const authRoutes = require('./src/routers/auth.routes');
-const productRoutes = require('./src/routers/product.routes');
+import express from 'express';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import expressJSDocSwagger from 'express-jsdoc-swagger';
+import authRoutes from './src/routers/auth.routes.js';
+import productRoutes from './src/routers/product.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -30,7 +35,7 @@ expressJSDocSwagger(app)(swaggerOptions);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
 /**
  * @summary Home endpoint
@@ -52,4 +57,4 @@ app.listen(PORT, () => {
   console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });
 
-module.exports = app;
+export default app;
