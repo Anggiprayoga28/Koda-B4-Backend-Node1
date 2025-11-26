@@ -1,25 +1,25 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import multer, { diskStorage } from 'multer';
+import { extname as _extname } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 const uploadDir = './uploads';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+if (!existsSync(uploadDir)) {
+  mkdirSync(uploadDir);
 }
 
-const storage = multer.diskStorage({
+const storage = diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
+    cb(null, 'product-' + uniqueSuffix + _extname(file.originalname));
   }
 });
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|webp/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = allowedTypes.test(_extname(file.originalname).toLowerCase());
   const mimetype = allowedTypes.test(file.mimetype);
 
   if (mimetype && extname) {
@@ -37,4 +37,4 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-module.exports = upload;
+export default upload;
