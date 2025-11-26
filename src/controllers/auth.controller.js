@@ -1,4 +1,4 @@
-const UserModel = require('../models/user.model');
+import UserModel from '../models/user.model.js';
 
 const AuthController = {
   register: async (req, res) => {
@@ -81,4 +81,4 @@ const AuthController = {
   }
 };
 
-module.exports = AuthController;
+export default AuthController;
