@@ -1,89 +1,80 @@
-let products = [
-  {
-    id: 1,
-    name: "Asus ROG",
-    description: "Laptop gaming dengan spesifikasi tinggi",
-    price: 15000000,
-    stock: 10,
-    image: null,
-    createdAt: new Date("2025-11-01")
-  },
-  {
-    id: 2,
-    name: "Macbook Air",
-    description: "Laptop luar biasa, tipis dan cepat untuk bekerja, bermain, dan berkarya di mana saja.",
-    price: 24000000,
-    stock: 25,
-    image: null,
-    createdAt: new Date("2025-11-02")
-  },
-  {
-    id: 3,
-    name: "Acer Predator",
-    description: "Merek lini perangkat keras komputer dari Acer yang dirancang khusus untuk para gamer dan kreator konten",
-    price: 12000000,
-    stock: 15,
-    image: null,
-    createdAt: new Date("2025-11-03")
-  },
-  {
-    id: 4,
-    name: "Lenovo Legion",
-    description: "Seri laptop gaming yang dirancang untuk performa tinggi, menawarkan kombinasi prosesor kuat (AMD Ryzen atau Intel Core), grafis diskrit (NVIDIA GeForce RTX), dan sistem pendingin canggih seperti Legion Coldfront untuk menjaga suhu saat beban berat",
-    price: 18000000,
-    stock: 8,
-    image: null,
-    createdAt: new Date("2025-11-04")
-  },
-  {
-    id: 5,
-    name: "Thinkpad",
-    description: "lini laptop dari Lenovo yang dirancang untuk profesional dengan fokus pada kinerja tinggi, daya tahan ekstrem, dan fitur keamanan",
-    price: 25000000,
-    stock: 20,
-    image: null,
-    createdAt: new Date("2025-11-05")
-  }
-];
-let productIdCounter = 6;
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 const ProductModel = {
-  create: (productData) => {
-    const newProduct = {
-      id: productIdCounter++,
-      ...productData,
-      createdAt: new Date()
-    };
-    products.push(newProduct);
-    return newProduct;
+  create: async (productData) => {
+    return await prisma.product.create({
+      data: productData
+    });
   },
 
-  findById: (id) => {
-    return products.find(p => p.id === parseInt(id));
+  findById: async (id) => {
+    return await prisma.product.findUnique({
+      where: { id: parseInt(id) }
+    });
   },
 
-  getAll: () => {
-    return products;
+  getAll: async (filters = {}) => {
+    const where = {};
+    
+    if (filters.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } }
+      ];
+    }
+    
+    if (filters.minPrice || filters.maxPrice) {
+      where.price = {};
+      if (filters.minPrice) {
+        where.price.gte = parseFloat(filters.minPrice);
+      }
+      if (filters.maxPrice) {
+        where.price.lte = parseFloat(filters.maxPrice);
+      }
+    }
+    
+    const orderBy = {};
+    if (filters.sortBy) {
+      orderBy[filters.sortBy] = filters.order === 'desc' ? 'desc' : 'asc';
+    } else {
+      orderBy.createdAt = 'desc';
+    }
+    
+    return await prisma.product.findMany({
+      where,
+      orderBy
+    });
   },
 
-  update: (id, productData) => {
-    const index = products.findIndex(p => p.id === parseInt(id));
-    if (index === -1) return null;
-
-    products[index] = {
-      ...products[index],
-      ...productData
-    };
-    return products[index];
+  update: async (id, productData) => {
+    try {
+      return await prisma.product.update({
+        where: { id: parseInt(id) },
+        data: productData
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        return null;
+      }
+      throw error;
+    }
   },
 
-  delete: (id) => {
-    const index = products.findIndex(p => p.id === parseInt(id));
-    if (index === -1) return false;
-
-    products.splice(index, 1);
-    return true;
+  delete: async (id) => {
+    try {
+      await prisma.product.delete({
+        where: { id: parseInt(id) }
+      });
+      return true;
+    } catch (error) {
+      if (error.code === 'P2025') {
+        return false;
+      }
+      throw error;
+    }
   }
 };
 
-module.exports = ProductModel;
+export default ProductModel;
