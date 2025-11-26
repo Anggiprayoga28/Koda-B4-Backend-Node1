@@ -1,9 +1,9 @@
-const prisma = require('../lib/prisma');
-const bcrypt = require('bcrypt');
+import {prisma} from '../lib/prisma.js';
+import { hash, compare } from 'bcrypt';
 
 const UserModel = {
   create: async (userData) => {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const hashedPassword = await hash(userData.password, 10);
     
     const newUser = await prisma.user.create({
       data: {
@@ -47,8 +47,8 @@ const UserModel = {
   },
 
   verifyPassword: async (plainPassword, hashedPassword) => {
-    return await bcrypt.compare(plainPassword, hashedPassword);
+    return await compare(plainPassword, hashedPassword);
   }
 };
 
-module.exports = UserModel;
+export default UserModel;
