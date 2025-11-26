@@ -1,4 +1,10 @@
+import jwt from 'jsonwebtoken';
 import UserModel from '../models/user.model.js';
+import process from 'process';
+
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const AuthController = {
   register: async (req, res) => {
@@ -23,6 +29,16 @@ const AuthController = {
       
       const newUser = await UserModel.create({ username, email, password });
       
+      const token = jwt.sign(
+        { 
+          id: newUser.id, 
+          email: newUser.email,
+          username: newUser.username 
+        },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
+      
       res.status(201).json({
         success: true,
         message: 'Registrasi berhasil',
@@ -31,7 +47,8 @@ const AuthController = {
           username: newUser.username,
           email: newUser.email,
           createdAt: newUser.createdAt
-        }
+        },
+        token
       });
     } catch (error) {
       console.error('Register error:', error);
@@ -62,6 +79,16 @@ const AuthController = {
         });
       }
       
+      const token = jwt.sign(
+        { 
+          id: user.id, 
+          email: user.email,
+          username: user.username 
+        },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
+      
       res.json({
         success: true,
         message: 'Login berhasil',
@@ -69,13 +96,40 @@ const AuthController = {
           id: user.id,
           username: user.username,
           email: user.email
-        }
+        },
+        token
       });
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({
         success: false,
         message: 'Terjadi kesalahan saat login'
+      });
+    }
+  },
+
+  verifyToken: async (req, res) => {
+    try {
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      
+      if (!token) {
+        return res.status(401).json({
+          success: false,
+          message: 'Token tidak ditemukan'
+        });
+      }
+
+      const decoded = jwt.verify(token, JWT_SECRET);
+      
+      res.json({
+        success: true,
+        message: 'Token valid',
+        data: decoded
+      });
+    } catch (error) {
+      res.status(401).json({
+        success: false,
+        message: error
       });
     }
   }
